@@ -1,196 +1,157 @@
-# ============================= УВАГА! =============================
-# Цей файл містить ПРИКЛАД виконання лабораторної роботи.
-# Ваше завдання - розробити ВЛАСНУ програму згідно з вашим варіантом.
-#
-# Ви можете використовувати цей код як зразок, але не копіювати його.
-# Повністю замініть цей код своєю реалізацією.
-#
-# Ваш код повинен відповідати таким вимогам:
-# 1. Обрана предметна область згідно з вашим варіантом.
-# 2. Реалізовано всі необхідні функції:
-#    - додавання, видалення, оновлення даних
-#    - пошук та фільтрація
-#    - обчислення статистик (середнє, min/max)
-#    - групування та агрегація
-# 3. Використано map(), filter(), reduce(), сортування, зрізи.
-# 4. Реалізовано операції з множинами та словниками.
-# 5. Створено інтерактивне меню для користувача.
-# =================================================================
-
 from collections import defaultdict
 from functools import reduce
 import datetime
 
-# Приклад: Аналіз даних про продажі
-# ЗАМІНІТЬ ЦІ ДАНІ ТА ЛОГІКУ НА ВАШІ ВЛАСНІ
-
-# 1. Підготовка даних
-sales_data = [
-    {"date": "2023-01-01", "product": "Laptop", "category": "Electronics", "price": 1200, "quantity": 5},
-    {"date": "2023-01-02", "product": "Smartphone", "category": "Electronics", "price": 800, "quantity": 10},
-    {"date": "2023-01-03", "product": "T-shirt", "category": "Clothing", "price": 20, "quantity": 50},
-    {"date": "2023-01-04", "product": "Jeans", "category": "Clothing", "price": 60, "quantity": 30},
-    {"date": "2023-01-05", "product": "Keyboard", "category": "Electronics", "price": 75, "quantity": 20},
+# Підготовка даних (список словників)
+sports_data = [
+    {"date": "2026-10-01", "player": "s1mple", "sport": "CS2", "score": 25, "tournament": "Major"},
+    {"date": "2026-10-02", "player": "Yatoro", "sport": "Dota 2", "score": 18, "tournament": "The International"},
+    {"date": "2026-10-03", "player": "b1t", "sport": "CS2", "score": 22, "tournament": "FACEIT Pro League"},
+    {"date": "2026-10-04", "player": "Dendi", "sport": "Dota 2", "score": 12, "tournament": "The International"},
 ]
 
-# 2. Функції для роботи з даними
-def add_sale(data, sale):
-    """Додає новий запис про продаж."""
-    data.append(sale)
-    print("Продаж додано успішно.")
+# === Функції для базових операцій (CRUD) ===
 
-def remove_sale(data, index):
-    """Видаляє запис про продаж за індексом."""
+def add_result(data, result):
+    """Додає новий спортивний результат."""
+    data.append(result)
+    print("Результат додано успішно.")
+
+def remove_result(data, index):
+    """Видаляє результат за індексом."""
     if 0 <= index < len(data):
         del data[index]
-        print("Продаж видалено успішно.")
+        print("Результат видалено успішно.")
     else:
         print("Невірний індекс.")
 
-def update_sale(data, index, key, value):
-    """Оновлює інформацію про продаж."""
+def update_result(data, index, key, value):
+    """Оновлює інформацію про результат."""
     if 0 <= index < len(data):
-        # Перетворення значення до відповідного типу
-        if key in ['price', 'quantity']:
-            try:
-                value = float(value) if key == 'price' else int(value)
-            except ValueError:
-                print(f"Невірний тип значення для ключа '{key}'")
-                return
         data[index][key] = value
         print("Інформацію оновлено успішно.")
     else:
         print("Невірний індекс.")
 
-def find_sales_by_product(data, product):
-    """Знаходить всі продажі конкретного продукту."""
-    return list(filter(lambda x: x["product"].lower() == product.lower(), data))
+# === Функції аналізу та фільтрації ===
 
-# 3. Специфічні функції аналізу
-def calculate_total_sales(data):
-    """Обчислює загальну суму продажів."""
-    return reduce(lambda acc, sale: acc + sale["price"] * sale["quantity"], data, 0)
+def find_by_player(data, player):
+    """Знаходить всі результати конкретного гравця (використовує filter)."""
+    return list(filter(lambda x: x["player"] == player, data))
 
-def calculate_average_price(data):
-    """Обчислює середню ціну товару."""
-    prices = [sale["price"] for sale in data]
-    return sum(prices) / len(prices) if prices else 0
+def calculate_total_score(data):
+    """Обчислює загальну суму всіх очок (використовує reduce)."""
+    return reduce(lambda acc, res: acc + res["score"], data, 0)
 
-# 4. Вбудовані функції та методи
-def sort_sales_by_date(data):
-    """Сортує продажі за датою."""
-    return sorted(data, key=lambda x: datetime.datetime.strptime(x["date"], "%Y-%m-%d"))
-
-# 5. Робота з множинами та словниками
-def group_sales_by_category(data):
-    """Групує продажі за категоріями."""
+def group_by_sport(data):
+    """Групує результати за дисципліною (використовує defaultdict)."""
     categories = defaultdict(list)
-    for sale in data:
-        categories[sale["category"]].append(sale)
+    for res in data:
+        categories[res["sport"]].append(res)
     return dict(categories)
 
-def find_best_selling_product(data):
-    """Знаходить товар, який найкраще продається."""
-    if not data:
-        return None
-    products = defaultdict(int)
-    for sale in data:
-        products[sale["product"]] += sale["quantity"]
-    return max(products, key=products.get)
+def sort_by_date(data):
+    """Сортує результати за датою."""
+    return sorted(data, key=lambda x: datetime.datetime.strptime(x["date"], "%Y-%m-%d"))
 
-# 6. Інтерактивне меню
+def get_top_3_results(data):
+    """Повертає Топ-3 найкращих результатів (використовує сортування та ЗРІЗИ)."""
+    sorted_data = sorted(data, key=lambda x: x["score"], reverse=True)
+    return sorted_data[:3]  # Зріз списку
+
+def show_unique_stats(data):
+    """Демонструє роботу з МНОЖИНАМИ (set) та функцією map()."""
+    # Отримуємо списки через map
+    tournaments = set(map(lambda x: x["tournament"], data))
+    sports = set(map(lambda x: x["sport"], data))
+    
+    print(f"Унікальні турніри: {tournaments}")
+    print(f"Унікальні дисципліни: {sports}")
+    print(f"Об'єднання множин: {tournaments | sports}") # Операція об'єднання
+
+# === Інтерактивне меню ===
+
 def print_menu():
-    """Виводить меню опцій."""
-    print("\n==== Меню аналізу продажів (ПРИКЛАД) ====")
-    print("1. Показати всі продажі")
-    print("2. Додати новий продаж")
-    print("3. Видалити продаж")
-    print("4. Оновити інформацію про продаж")
-    print("5. Знайти продажі за назвою товару")
-    print("6. Обчислити загальну суму продажів")
-    print("7. Групувати продажі за категоріями")
-    print("8. Сортувати продажі за датою")
-    print("9. Знайти товар, який найкраще продається")
-    print("10. Обчислити середню ціну товару")
+    print("\n==== Меню аналізу кіберспортивних результатів ====")
+    print("1. Показати всі результати")
+    print("2. Додати новий результат")
+    print("3. Видалити результат")
+    print("4. Оновити інформацію")
+    print("5. Знайти результати за нікнеймом гравця")
+    print("6. Загальна сума набраних очок")
+    print("7. Групувати за дисципліною")
+    print("8. Сортувати за датою")
+    print("9. Показати Топ-3 найкращих результатів")
+    print("10. Унікальна статистика турнірів")
     print("0. Вийти")
 
 def main():
-    """Головна функція програми."""
-    global sales_data
+    global sports_data
     while True:
         print_menu()
         choice = input("Оберіть опцію: ")
-
+        
         if choice == "1":
-            if not sales_data:
-                print("Немає даних про продажі.")
-            for i, sale in enumerate(sales_data):
-                print(f"{i}: {sale}")
+            for i, res in enumerate(sports_data):
+                print(f"{i}: {res}")
+                
         elif choice == "2":
-            try:
-                date = input("Введіть дату (YYYY-MM-DD): ")
-                datetime.datetime.strptime(date, "%Y-%m-%d") # перевірка формату
-                product = input("Введіть назву товару: ")
-                category = input("Введіть категорію: ")
-                price = float(input("Введіть ціну: "))
-                quantity = int(input("Введіть кількість: "))
-                new_sale = {"date": date, "product": product, "category": category, "price": price, "quantity": quantity}
-                add_sale(sales_data, new_sale)
-            except ValueError:
-                print("Помилка введення. Перевірте формат дати, ціни та кількості.")
+            date = input("Введіть дату (YYYY-MM-DD): ")
+            player = input("Введіть нікнейм гравця: ")
+            sport = input("Введіть дисципліну: ")
+            score = int(input("Введіть кількість очок (кілів): "))
+            tournament = input("Введіть назву турніру: ")
+            new_result = {"date": date, "player": player, "sport": sport, "score": score, "tournament": tournament}
+            add_result(sports_data, new_result)
+            
         elif choice == "3":
-            try:
-                index = int(input("Введіть індекс продажу для видалення: "))
-                remove_sale(sales_data, index)
-            except ValueError:
-                print("Невірний індекс. Введіть число.")
+            index = int(input("Введіть індекс для видалення: "))
+            remove_result(sports_data, index)
+            
         elif choice == "4":
-            try:
-                index = int(input("Введіть індекс продажу для оновлення: "))
-                if not (0 <= index < len(sales_data)):
-                    print("Невірний індекс.")
-                    continue
-                key = input("Введіть ключ для оновлення (date/product/category/price/quantity): ")
-                if key not in sales_data[0]:
-                    print("Невірний ключ.")
-                    continue
+            index = int(input("Введіть індекс для оновлення: "))
+            key = input("Введіть ключ (date/player/sport/score/tournament): ")
+            if key == "score":
+                value = int(input("Введіть нове значення очок: "))
+            else:
                 value = input("Введіть нове значення: ")
-                update_sale(sales_data, index, key, value)
-            except ValueError:
-                print("Невірний індекс. Введіть існуючий числовий індекс.")
+            update_result(sports_data, index, key, value)
+            
         elif choice == "5":
-            product = input("Введіть назву товару для пошуку: ")
-            results = find_sales_by_product(sales_data, product)
-            if results:
-                for sale in results:
-                    print(sale)
-            else:
-                print(f"Продажі для товару '{product}' не знайдено.")
+            player = input("Введіть нікнейм для пошуку: ")
+            results = find_by_player(sports_data, player)
+            for res in results:
+                print(res)
+                
         elif choice == "6":
-            total = calculate_total_sales(sales_data)
-            print(f"Загальна сума продажів: {total}")
+            total = calculate_total_score(sports_data)
+            print(f"Загальна сума всіх очок: {total}")
+            
         elif choice == "7":
-            grouped = group_sales_by_category(sales_data)
-            for category, sales in grouped.items():
-                print(f"\nКатегорія: {category}:")
-                for sale in sales:
-                    print(f"  {sale}")
+            grouped = group_by_sport(sports_data)
+            for sport, results in grouped.items():
+                print(f"\n{sport}:")
+                for res in results:
+                    print(f"  {res}")
+                    
         elif choice == "8":
-            sorted_sales = sort_sales_by_date(sales_data)
-            for sale in sorted_sales:
-                print(sale)
+            sorted_res = sort_by_date(sports_data)
+            for res in sorted_res:
+                print(res)
+                
         elif choice == "9":
-            best_product = find_best_selling_product(sales_data)
-            if best_product:
-                print(f"Товар, який найкраще продається: {best_product}")
-            else:
-                print("Немає даних для аналізу.")
+            top_3 = get_top_3_results(sports_data)
+            print("\nТоп-3 результати:")
+            for res in top_3:
+                print(res)
+                
         elif choice == "10":
-            avg_price = calculate_average_price(sales_data)
-            print(f"Середня ціна товару: {avg_price:.2f}")
+            show_unique_stats(sports_data)
+            
         elif choice == "0":
             print("Дякуємо за використання програми!")
             break
+            
         else:
             print("Невірний вибір. Спробуйте ще раз.")
 
